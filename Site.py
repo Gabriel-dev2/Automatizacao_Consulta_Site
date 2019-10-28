@@ -7,7 +7,7 @@ class Site:
     html = requests.request('GET', 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx')
     viewstate = ''
     viewstategenerator = ''
-    placa = 'DRG3560'  # LLY9200
+    placa = 'DRG3560'  #  LLY9200
     cookie = html.cookies
     temp = ''
     if re.search('<RequestsCookieJar', str(cookie)):

@@ -55,19 +55,28 @@ class BuilderXMLret:
         initial_position = recorded.find('<P align="justify">&nbsp;')
         final_position = recorded.find('</P>')
         recorded = recorded[initial_position + 25:final_position].strip()
-        array = recorded.split('<BR>')
+        if re.search('Veículo não se encontra no pátio', recorded):
+            recorded = '0222 - NÃO ENCONTRADO'
+            print(recorded)
+        else:
+            array = recorded.split('<BR>')
 
-        for i in array:
-            if re.search('Veículo placa', i):
-                infor_registro = i
-            elif re.search('A liberação DO veículo', i) or re.search('A liberação DO veículo', i) or re.search('De segunda a sexta-feira', i) or re.search('    DETRAN', i)  or re.search('2\)', i) or re.search('O proprietário deverá', i):
-                dados_liberacao += i
-            elif re.search('O veículo será liberado', i):
-                mensagem = i
+            for i in array:
+                if re.search('Veículo placa', i):
+                    infor_registro = i
+                elif re.search('A liberação DO veículo', i) or re.search('A liberação DO veículo', i) or re.search(
+                        'De segunda a sexta-feira', i) or re.search('    DETRAN', i) or re.search('2\)',
+                                                                                                  i) or re.search(
+                        'O proprietário deverá', i):
+                    dados_liberacao += i
+                elif re.search('O veículo será liberado', i):
+                    mensagem = i
 
-        xml = getSchema('GUINCHADOSPREFEITURASP', 'Registro', 'inforRegistro', 'dadosLiberacao', 'mensagem', infor_registro, dados_liberacao, mensagem)
+            xml = getSchema('GUINCHADOSPREFEITURASP', 'Registro', 'inforRegistro', 'dadosLiberacao', 'mensagem',
+                            infor_registro, dados_liberacao, mensagem)
+            print(xml)
 
-        print(xml)
+
     # html = open('../texto.html', 'r')
     # teste = html.readlines()
 
