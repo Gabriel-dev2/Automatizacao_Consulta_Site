@@ -2,63 +2,80 @@ import requests
 import re
 import builder.builderXMLret
 
+
+def making_request(request_type, url, headers, params):
+    if request_type == 'GET' and url == '' and headers == '' and params == '':
+        response = requests.request('GET', url)
+    else:
+        response = requests.post(url=url, headers=headers,
+                                 data=params)
+    return response
+
+
 class Site:
 
-    html = requests.request('GET', 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx')
-    viewstate = ''
-    viewstategenerator = ''
-    placa = 'DRG3560'  #  LLY9200
-    cookie = html.cookies
-    temp = ''
-    if re.search('<RequestsCookieJar', str(cookie)):
-        temp = str(cookie)
-        temp = temp.replace('<RequestsCookieJar[<Cookie ', '')
-        temp = temp.replace(' for www3.prefeitura.sp.gov.br/>]>', '')
+    def __init__(self, url, placa):
+        self.url = url
+        self.placa = placa
+        self.submit_site(url, placa)
 
-    if html.text.find('<input type="hidden" name="__VIEWSTATE"'):
-        array = html.text.split('<input')
-        for i in array:
-            if re.search('__VIEWSTATE"', i):
-                retorno = i.replace('type="hidden" name="__VIEWSTATE" value="', '')
+    def submit_site(self, url, placa):
+        html = making_request('GET', url, '', '')
+        view_state = ''
+        view_state_generator = ''
+        # placa = 'DRG3560'  # LLY9200
+        cookie = html.cookies
+        cookie_str = ''
+        if re.search('<RequestsCookieJar', str(cookie)):
+            cookie_str = str(cookie)
+            cookie_str = cookie_str.replace('<RequestsCookieJar[<Cookie ', '')
+            cookie_str = cookie_str.replace(' for www3.prefeitura.sp.gov.br/>]>', '')
 
-    if html.text.find('<input type="hidden" name="__VIEWSTATE"'):
-        array2 = html.text.split('<input')
-        for a in array2:
-            if re.search('__VIEWSTATEGENERATOR"', a):
-                retorno2 = a.replace('type="hidden" name="__VIEWSTATEGENERATOR" value="', '')
-                retorno2 = retorno2[:13]
+        if html.text.find('<input type="hidden" name="__VIEWSTATE"'):
+            array = html.text.split('<input')
+            for i in array:
+                if re.search('__VIEWSTATE"', i):
+                    retorno = i.replace('type="hidden" name="__VIEWSTATE" value="', '')
 
-    viewstate = retorno.replace('" />', '')
-    viewstate = viewstate.replace('\r\n\r\n', '')
+        if html.text.find('<input type="hidden" name="__VIEWSTATE"'):
+            array2 = html.text.split('<input')
+            for a in array2:
+                if re.search('__VIEWSTATEGENERATOR"', a):
+                    retorno2 = a.replace('type="hidden" name="__VIEWSTATEGENERATOR" value="', '')
+                    retorno2 = retorno2[:13]
 
-    viewstategenerator = retorno2.replace('" />', '')
-    viewstategenerator = viewstategenerator.replace('\r\n\t', '')
+        view_state = retorno.replace('" />', '')
+        view_state = view_state.replace('\r\n\r\n', '')
 
-    HEADERS = {'Host': 'www3.prefeitura.sp.gov.br',
-               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0',
-               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-               'Accept-Language': 'pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3',
-               'Accept-Encoding': 'gzip, deflate',
-               'Referer': 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx',
-               'Content-Type': 'application/x-www-form-urlencoded',
-               'Connection': 'close',
-               'Cookie': temp,
-               'Upgrade-Insecure-Requests': '1'}
+        view_state_generator = retorno2.replace('" />', '')
+        view_state_generator = view_state_generator.replace('\r\n\t', '')
 
-    PARAMS = {'PageProdamSPOnChange': '',
-              'PageProdamSPPosicao': 'Form=0;0/',
-              'PageProdamSPFocado': 'btnPesquisar',
-              '__VIEWSTATE': viewstate,
-              '__VIEWSTATEGENERATOR': viewstategenerator,
-              'txtPlaca': placa,
-              'btnPesquisar': 'Pesquisar'}
+        headers = {'Host': 'www3.prefeitura.sp.gov.br',
+                   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0',
+                   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                   'Accept-Language': 'pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3',
+                   'Accept-Encoding': 'gzip, deflate',
+                   'Referer': 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx',
+                   'Content-Type': 'application/x-www-form-urlencoded',
+                   'Connection': 'close',
+                   'Cookie': cookie_str,
+                   'Upgrade-Insecure-Requests': '1'}
 
-    response = requests.post(url='http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx', headers=HEADERS,
-                             data=PARAMS)
+        params = {'PageProdamSPOnChange': '',
+                  'PageProdamSPPosicao': 'Form=0;0/',
+                  'PageProdamSPFocado': 'btnPesquisar',
+                  '__VIEWSTATE': view_state,
+                  '__VIEWSTATEGENERATOR': view_state_generator,
+                  'txtPlaca': placa,
+                  'btnPesquisar': 'Pesquisar'}
 
-   # arquivo = open('texto.html', 'w')
+        response = making_request('POST', url, headers, params)
 
-    #arquivo.write(response.text)
-    html = response.text
-    builder.builderXMLret.BuilderXMLret.builder_xml_ret(html)
+        # arquivo = open('texto.html', 'w')
 
+        # arquivo.write(response.text)
+        html = response.text
+        builder.builderXMLret.BuilderXmlRet.builder_xml_ret(html)
+
+        if __name__ == '__main__':
+            Site.__init__(self, 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx', 'DRG3560')
