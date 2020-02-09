@@ -107,6 +107,9 @@ venv.bak/
 .idea
 venv
 __pycache__
+.idea/misc.xml
+.idea/teste.iml
+.idea/workspace.xml
 
 #vscode
 .vscode
