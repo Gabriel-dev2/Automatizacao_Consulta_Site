@@ -64,8 +64,3 @@ class BuilderXmlRet:
             xml = get_schema('GUINCHADOSPREFEITURASP', 'Registro', 'inforRegistro', 'dadosLiberacao', 'message',
                              info_reg, data_liberation, message)
             print(xml)
-
-    # html = open('../texto.html', 'r')
-    # teste = html.readlines()
-
-    # print(recorte)
