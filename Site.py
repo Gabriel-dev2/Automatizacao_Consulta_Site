@@ -1,11 +1,6 @@
 import requests
 import re
-import importlib
-
 from builder.builderXMLret import BuilderXmlRet
-
-
-# importlib.import_module('builder.builderXMLret.BuilderXmlRet')
 
 
 def making_request(request_type, url, headers, params):
@@ -28,7 +23,6 @@ class Site:
         html = making_request('GET', url, '', '')
         view_state = ''
         view_state_generator = ''
-        # placa = 'DRG3560'  # LLY9200
         cookie = html.cookies
         cookie_str = ''
         if re.search('<RequestsCookieJar', str(cookie)):
@@ -76,16 +70,12 @@ class Site:
 
         response = making_request('POST', url, headers, params)
 
-        # arquivo = open('texto.html', 'w')
-
-        # arquivo.write(response.text)
         html = response.text
         BuilderXmlRet(html)
-        print('passou')
 
 
 if __name__ == '__main__':
-    print('Começou')
     url = 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx'
-    placa = 'DRG3560'
+    # placas para serem utilizadas em testes 'DRG3560'  'LLY9200'
+    placa = 'LLY9200'
     Site(url, placa)
