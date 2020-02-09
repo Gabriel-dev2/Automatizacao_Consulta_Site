@@ -80,8 +80,12 @@ class Site:
 
         # arquivo.write(response.text)
         html = response.text
-        BuilderXmlRet.__init__(html)
+        BuilderXmlRet(html)
         print('passou')
 
-        if __name__ == '__main__':
-            Site.__init__(self, 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx', 'DRG3560')
+
+if __name__ == '__main__':
+    print('Começou')
+    url = 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx'
+    placa = 'DRG3560'
+    Site(url, placa)
