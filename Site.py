@@ -1,6 +1,11 @@
 import requests
 import re
-import builder.builderXMLret
+import importlib
+
+from builder.builderXMLret import BuilderXmlRet
+
+
+# importlib.import_module('builder.builderXMLret.BuilderXmlRet')
 
 
 def making_request(request_type, url, headers, params):
@@ -75,7 +80,8 @@ class Site:
 
         # arquivo.write(response.text)
         html = response.text
-        builder.builderXMLret.BuilderXmlRet.builder_xml_ret(html)
+        BuilderXmlRet.__init__(html)
+        print('passou')
 
         if __name__ == '__main__':
             Site.__init__(self, 'http://www3.prefeitura.sp.gov.br/smt/pesqveic/Pesquisa.aspx', 'DRG3560')
